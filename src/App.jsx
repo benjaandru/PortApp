@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSheets } from './hooks/useSheets';
-import Dashboard from './components/Dashboard';
+import Dashboard from './pages/Dashboard';
 import GastoForm from './components/GastoForm';
 
 export default function App() {

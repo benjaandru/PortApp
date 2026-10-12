@@ -56,7 +56,7 @@ export async function insertarGastoApi(gasto) {
 
 /**
  * Registra una nueva inversión en Google Sheets
- * @param {{ fecha: string, ticker: string, monto_invertido: number|string, cantidad: number|string }} inversion
+ * @param {{ fecha: string, ticker: string, monto_invertido: number|string, cantidad: number|string, categoria: string }} inversion
  */
 export async function insertarInversionApi(inversion) {
   return postAppsScript('insertar_inversion', inversion);
