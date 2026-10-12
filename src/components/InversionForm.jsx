@@ -179,7 +179,7 @@ export default function InversionForm({ onInversionCreada, submitting }) {
 
                 {/* Selector de Categorías (Pills móviles táctiles) */}
                 <div className="form-group">
-                    <label className="form-label">Categoría</label>
+                    <label className="form-label">Categoria</label>
                     <div className="category-grid">
                         {CATEGORIAS_PREDEFINIDAS.map((cat) => {
                             const isSelected = formData.categoria === cat.id;
