@@ -5,7 +5,10 @@ const CATEGORIAS_PREDEFINIDAS = [
     { id: 'SYP', icon: '📈', label: 'S&P 500' },
     { id: 'Criptomonedas', icon: '₿', label: 'Criptomonedas' },
     { id: 'Renta_fija', icon: '🏦', label: 'Renta Fija' },
-    { id: 'Fondo_de_emergencia', icon: '🛡️', label: 'Emergencia' }
+    { id: 'Fondo_de_emergencia', icon: '🛡️', label: 'Emergencia' },
+    { id: 'Acciones', icon: ' ', label: 'Acciones' },
+    { id: 'Fondos_Comunes_de_Inversion', icon: ' ', label: 'FCI' },
+    { id: 'Emergentes', icon: ' ', label: 'Emergentes' }
 ];
 
 export default function InversionForm({ onInversionCreada, submitting }) {
