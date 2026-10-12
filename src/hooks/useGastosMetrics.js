@@ -7,7 +7,7 @@ import { useMemo } from 'react';
  * @returns {{
  *   totalHistorico: number,
  *   totalMesActual: number,
- *   categoriasOrdenadas: Array<{ categoria: string, total: number, porcentaje: number }>
+ *   categoriasOrdenadasGastos: Array<{ categoria: string, total: number, porcentaje: number }>
  * }}
  */
 export function useGastosMetrics(gastos = []) {
@@ -16,7 +16,7 @@ export function useGastosMetrics(gastos = []) {
       return {
         totalHistorico: 0,
         totalMesActual: 0,
-        categoriasOrdenadas: [],
+        categoriasOrdenadasGastos: [],
       };
     }
 
@@ -38,7 +38,7 @@ export function useGastosMetrics(gastos = []) {
       porCategoria[cat] = (porCategoria[cat] || 0) + monto;
     });
 
-    const categoriasOrdenadas = Object.entries(porCategoria)
+    const categoriasOrdenadasGastos = Object.entries(porCategoria)
       .map(([categoria, total]) => ({
         categoria,
         total,
@@ -49,7 +49,7 @@ export function useGastosMetrics(gastos = []) {
     return {
       totalHistorico,
       totalMesActual,
-      categoriasOrdenadas,
+      categoriasOrdenadasGastos,
     };
   }, [gastos]);
 }

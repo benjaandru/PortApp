@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { useSheets } from './hooks/useSheets';
 import Dashboard from './pages/Dashboard';
 import GastoForm from './components/GastoForm';
+import InversionForm from './components/InversionForm';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'nuevo-gasto'
-  const { data, loading, error, submitting, refetch, agregarGasto } = useSheets();
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'nuevo-gasto' | 'nueva-inversion'
+  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion } = useSheets();
 
   const handleGastoCreado = async (gasto) => {
     await agregarGasto(gasto);
+  };
+
+  const handleInversionCreado = async (inversion) => {
+    await agregarInversion(inversion);
   };
 
   return (
@@ -49,6 +54,14 @@ export default function App() {
             />
           </div>
         )}
+        {activeTab === 'nueva-inversion' && (
+          <div className="form-page-container">
+            <InversionForm
+              onInversionCreada={handleInversionCreado}
+              submitting={submitting}
+            />
+          </div>
+        )}
       </main>
 
       {/* Barra de Navegación Inferior Estilo Nativo iOS con Safe Area Inset */}
@@ -69,6 +82,14 @@ export default function App() {
         >
           <span className="nav-icon">➕</span>
           <span className="nav-label">Nuevo Gasto</span>
+        </button>
+        <button
+          type="button"
+          className={`nav-tab ${activeTab === 'nueva-inversion' ? 'active' : ''}`}
+          onClick={() => setActiveTab('nueva-inversion')}
+        >
+          <span className="nav-icon">➕</span>
+          <span className="nav-label">Nueva Inversion</span>
         </button>
       </nav>
     </div>

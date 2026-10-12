@@ -4,7 +4,7 @@ import { formatearDinero } from '../../utils/formatters.js';
 /**
  * Componente Presentacional: Renderiza las barras de distribución de gastos por categoría
  */
-export default function DistribucionGastos({ categoriasOrdenadas = [] }) {
+export default function DistribucionGastos({ categoriasOrdenadasGastos = [] }) {
   return (
     <div className="card-glass mt-6">
       <div className="card-header">
@@ -12,11 +12,11 @@ export default function DistribucionGastos({ categoriasOrdenadas = [] }) {
         <span className="badge-neutral">Por Categoría</span>
       </div>
 
-      {categoriasOrdenadas.length === 0 ? (
+      {categoriasOrdenadasGastos.length === 0 ? (
         <p className="empty-text">No hay gastos registrados en la pestaña "Gastos".</p>
       ) : (
         <div className="category-bars">
-          {categoriasOrdenadas.map((cat, idx) => (
+          {categoriasOrdenadasGastos.map((cat, idx) => (
             <div key={idx} className="bar-item">
               <div className="bar-labels">
                 <span className="bar-name">{cat.categoria}</span>

@@ -36,4 +36,46 @@ describe('Hook: useInversionesMetrics', () => {
       costoInflacionario: 200,
     });
   });
+
+  it('debe devolver un portfolio con categorias validas', () => {
+    const mockInversiones = [
+      { Ticker: 'AAPL', Fecha: '2024-01-10', Monto_Invertido: 1000, Cantidad: 10, Categoria: 'CEDEARs' },
+    ];
+    const mockInflacion = [{ Mes: '2024-01', Porcentaje: 20 }];
+    const { result } = renderHook(() => useInversionesMetrics(mockInversiones, mockInflacion));
+
+    expect(result.current.totalInvertido).toBe(1000);
+    expect(result.current.categoriasOrdenadasInversiones).toEqual([
+      { categoria: 'CEDEARs', total: 1000, porcentaje: 100 }
+    ]);
+  });
+
+  it('debe calcular correctamente la distribución porcentual de inversiones', () => {
+    const mockInversiones = [
+      { Ticker: 'AAPL', Monto_Invertido: 1000, Cantidad: 10, Categoria: 'CEDEARs' },
+      { Ticker: 'GOOG', Monto_Invertido: 500, Cantidad: 5, Categoria: 'Acciones' },
+      { Ticker: 'TSLA', Monto_Invertido: 500, Cantidad: 5, Categoria: 'Acciones' },
+    ];
+    const mockInflacion = [];
+
+    const { result } = renderHook(() => useInversionesMetrics(mockInversiones, mockInflacion));
+
+    expect(result.current.totalInvertido).toBe(2000);
+
+    const categorias = result.current.categoriasOrdenadasInversiones;
+
+    // Buscamos la categoría Acciones
+    const accionesCat = categorias.find(c => c.categoria === 'Acciones');
+    // Buscamos la categoría CEDEARs
+    const cedearsCat = categorias.find(c => c.categoria === 'CEDEARs');
+
+    // Verificación de porcentajes
+    expect(accionesCat.porcentaje).toBeCloseTo(50, 2);
+    expect(cedearsCat.porcentaje).toBeCloseTo(50, 2);
+
+    // Verificación de totales
+    expect(accionesCat.total).toBe(1000);
+    expect(cedearsCat.total).toBe(1000);
+  });
+
 });

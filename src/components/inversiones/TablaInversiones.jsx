@@ -25,9 +25,6 @@ export default function TablaInversiones({ portfolio = [] }) {
                 <th className="text-right">Cantidad</th>
                 <th className="text-right">Invertido</th>
                 <th className="text-right">Categoría</th>
-                <th className="text-right">Precio Prom.</th>
-                <th className="text-right">Ajustado s/ Inflación</th>
-                <th className="text-right">Benchmark Inflación</th>
               </tr>
             </thead>
             <tbody>
@@ -43,15 +40,6 @@ export default function TablaInversiones({ portfolio = [] }) {
                   </td>
                   <td className="text-right font-mono">
                     <span className="category-tag">{item.categoria}</span>
-                  </td>
-                  <td className="text-right font-mono text-muted">
-                    {formatearDinero(item.precioPromedio)}
-                  </td>
-                  <td className="text-right font-mono text-cyan font-bold">
-                    {formatearDinero(item.capitalAjustadoInflacion)}
-                  </td>
-                  <td className="text-right font-mono text-amber">
-                    +{formatearDinero(item.costoInflacionario)}
                   </td>
                 </tr>
               ))}

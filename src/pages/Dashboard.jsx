@@ -4,6 +4,7 @@ import { useInversionesMetrics } from '../hooks/useInversionesMetrics.js';
 import KpiGrid from '../components/dashboard/KpiGrid.jsx';
 import TablaInversiones from '../components/inversiones/TablaInversiones.jsx';
 import DistribucionGastos from '../components/gastos/DistribucionGastos.jsx';
+import DistribucionInversiones from '../components/inversiones/DistribucionInversiones.jsx'
 import HistorialGastos from '../components/gastos/HistorialGastos.jsx';
 
 /**
@@ -19,13 +20,15 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
   const { gastos = [], inversiones = [], inflacion = [] } = data || {};
 
   // Custom Hooks (Capa de Aplicación)
-  const { totalHistorico, totalMesActual, categoriasOrdenadas } = useGastosMetrics(gastos);
+  const { totalHistorico, totalMesActual, categoriasOrdenadasGastos } = useGastosMetrics(gastos);
   const {
     totalInvertido,
     totalAjustado,
     perdidaOportunidadTotal,
     portfolio,
     metricasInflacion,
+    categoriasOrdenadasInversiones,
+    metricasPortfolio,
   } = useInversionesMetrics(inversiones, inflacion);
 
   return (
@@ -68,7 +71,11 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
       <TablaInversiones portfolio={portfolio} />
 
       {/* 3. Distribución de Gastos por Categoría */}
-      <DistribucionGastos categoriasOrdenadas={categoriasOrdenadas} />
+      <DistribucionGastos categoriasOrdenadasGastos={categoriasOrdenadasGastos} />
+
+      <DistribucionInversiones
+        categoriasOrdenadasInversiones={categoriasOrdenadasInversiones}
+      />
 
       {/* 4. Historial Reciente de Gastos */}
       <HistorialGastos gastos={gastos} />

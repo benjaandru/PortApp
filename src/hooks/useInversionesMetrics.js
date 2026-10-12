@@ -5,33 +5,6 @@ import {
   calcularCostoInflacionario,
 } from '../core/domain/inflation.js';
 
-/**
- * Custom Hook para procesar el portfolio de inversiones y su ajuste inflacionario.
- * Delega los cálculos matemáticos en la Capa de Dominio (Hexagonal Core).
- * 
- * @param {Array<{ Ticker: string, Fecha: string, Monto_Invertido: number|string, Cantidad: number|string, Categoria?: string }>} inversiones
- * @param {Array<{ Mes: string, Porcentaje: number|string }>} inflacion
- * @returns {{
- *   totalInvertido: number,
- *   totalAjustado: number,
- *   perdidaOportunidadTotal: number,
- *   portfolio: Array<{
- *     ticker: string,
- *     fecha: string,
- *     cantidad: number,
- *     categoria: string,
- *     montoInvertido: number,
- *     precioPromedio: number,
- *     capitalAjustadoInflacion: number,
- *     costoInflacionario: number
- *   }>,
- *   metricasInflacion: {
- *     tasaCompuesta: number,
- *     inflacionAcumuladaPct: number,
- *     registros: Array
- *   }
- * }}
- */
 export function useInversionesMetrics(inversiones = [], inflacion = []) {
   // 1. Inflación compuesta acumulada
   const metricasInflacion = useMemo(() => {
@@ -46,32 +19,33 @@ export function useInversionesMetrics(inversiones = [], inflacion = []) {
     };
   }, [inflacion]);
 
-  // 2. Métricas y ajuste real del portfolio
+  // 2. Métricas, agrupación por categoría y ajuste real
   const metricasPortfolio = useMemo(() => {
     const listaInversiones = Array.isArray(inversiones) ? inversiones : [];
     let totalInvertido = 0;
+
+    // Objeto para ir sumando montos por categoría
+    const porCategoria = {};
 
     const portfolio = listaInversiones.map((inv) => {
       const monto = parseFloat(inv?.Monto_Invertido) || 0;
       const cant = parseFloat(inv?.Cantidad) || 1;
       const categoria = inv?.Categoria || 'Varios';
+
       totalInvertido += monto;
 
-      // Cálculos puros delegados al Core de Dominio
-      const capitalAjustadoInflacion = ajustarCapitalPorInflacion(
-        monto,
-        metricasInflacion.tasaCompuesta
-      );
-      const costoInflacionario = calcularCostoInflacionario(
-        monto,
-        metricasInflacion.tasaCompuesta
-      );
+      // Agregamos el monto a la categoría correspondiente
+      porCategoria[categoria] = (porCategoria[categoria] || 0) + monto;
+
+      // Cálculo de inflación individual
+      const capitalAjustadoInflacion = ajustarCapitalPorInflacion(monto, metricasInflacion.tasaCompuesta);
+      const costoInflacionario = calcularCostoInflacionario(monto, metricasInflacion.tasaCompuesta);
 
       return {
         ticker: inv?.Ticker || 'N/A',
         fecha: inv?.Fecha || '-',
         cantidad: cant,
-        categoria,
+        categoria: categoria,
         montoInvertido: monto,
         precioPromedio: cant > 0 ? monto / cant : 0,
         capitalAjustadoInflacion,
@@ -84,16 +58,26 @@ export function useInversionesMetrics(inversiones = [], inflacion = []) {
       metricasInflacion.tasaCompuesta
     );
 
+    // Transformamos el objeto de categorías en un array ordenado (igual que en gastos)
+    const categoriasOrdenadasInversiones = Object.entries(porCategoria)
+      .map(([cat, total]) => ({
+        categoria: cat,
+        total,
+        porcentaje: totalInvertido > 0 ? (total / totalInvertido) * 100 : 0,
+      }))
+      .sort((a, b) => b.total - a.total);
+
     return {
       totalInvertido,
       totalAjustado,
       perdidaOportunidadTotal: totalAjustado - totalInvertido,
       portfolio,
+      categoriasOrdenadasInversiones,
     };
   }, [inversiones, metricasInflacion]);
 
   return {
-    ...metricasPortfolio,
+    ...metricasPortfolio, //Aca solamente estoy devolviendo los valores que obtuve en metricasPortfolio
     metricasInflacion,
   };
 }

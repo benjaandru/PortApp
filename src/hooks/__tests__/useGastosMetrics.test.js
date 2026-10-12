@@ -8,7 +8,7 @@ describe('Hook: useGastosMetrics', () => {
 
     expect(result.current.totalHistorico).toBe(0);
     expect(result.current.totalMesActual).toBe(0);
-    expect(result.current.categoriasOrdenadas).toEqual([]);
+    expect(result.current.categoriasOrdenadasGastos).toEqual([]);
   });
 
   it('debe calcular totales históricos y por categoría correctamente', () => {
@@ -23,12 +23,12 @@ describe('Hook: useGastosMetrics', () => {
 
     expect(result.current.totalHistorico).toBe(3500);
     expect(result.current.totalMesActual).toBe(1500);
-    expect(result.current.categoriasOrdenadas).toHaveLength(2);
+    expect(result.current.categoriasOrdenadasGastos).toHaveLength(2);
 
     // Servicios tuvo 2000, Comida tuvo 1500 -> Servicios primero
-    expect(result.current.categoriasOrdenadas[0].categoria).toBe('Servicios');
-    expect(result.current.categoriasOrdenadas[0].total).toBe(2000);
-    expect(result.current.categoriasOrdenadas[1].categoria).toBe('Comida');
-    expect(result.current.categoriasOrdenadas[1].total).toBe(1500);
+    expect(result.current.categoriasOrdenadasGastos[0].categoria).toBe('Servicios');
+    expect(result.current.categoriasOrdenadasGastos[0].total).toBe(2000);
+    expect(result.current.categoriasOrdenadasGastos[1].categoria).toBe('Comida');
+    expect(result.current.categoriasOrdenadasGastos[1].total).toBe(1500);
   });
 });
