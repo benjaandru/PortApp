@@ -33,5 +33,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
-  ]
+  ],
+  test: {
+    globals: true,
+    environment: 'jsdom'
+  }
 });

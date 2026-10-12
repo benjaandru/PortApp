@@ -1,4 +1,9 @@
 import React, { useMemo } from 'react';
+import {
+  calcularInflacionCompuesta,
+  ajustarCapitalPorInflacion,
+  calcularCostoInflacionario,
+} from '../core/domain/inflation';
 
 export default function Dashboard({ data, loading, error, onRefresh }) {
   const { gastos = [], inversiones = [], inflacion = [] } = data;
@@ -39,16 +44,11 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
     };
   }, [gastos]);
 
-  // 2. Cálculos de Inflación Acumulada
+  // 2. Cálculos de Inflación Acumulada delegados a la Capa de Dominio (Hexagonal Core)
   const metricasInflacion = useMemo(() => {
-    // Cálculo compuesto: (1 + r1) * (1 + r2) * ... - 1
-    let factorCompuesto = 1;
-    inflacion.forEach((inf) => {
-      const pct = parseFloat(inf.Porcentaje) || 0;
-      factorCompuesto *= 1 + pct / 100;
-    });
+    const tasas = inflacion.map((inf) => inf.Porcentaje);
+    const { factorCompuesto, inflacionAcumuladaPct } = calcularInflacionCompuesta(tasas);
 
-    const inflacionAcumuladaPct = (factorCompuesto - 1) * 100;
     return {
       tasaCompuesta: factorCompuesto,
       inflacionAcumuladaPct,
@@ -56,7 +56,7 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
     };
   }, [inflacion]);
 
-  // 3. Cálculos de Portfolio de Inversiones ajustadas por Inflación
+  // 3. Cálculos de Portfolio de Inversiones ajustadas por Inflación (Dominio)
   const metricasInversiones = useMemo(() => {
     let totalInvertido = 0;
 
@@ -65,9 +65,9 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
       const cant = parseFloat(inv.Cantidad) || 1;
       totalInvertido += monto;
 
-      // Capital requerido hoy para mantener poder adquisitivo:
-      const capitalAjustadoInflacion = monto * metricasInflacion.tasaCompuesta;
-      const perdidaPoderAdquisitivo = capitalAjustadoInflacion - monto;
+      // Delegado a funciones puras del dominio
+      const capitalAjustadoInflacion = ajustarCapitalPorInflacion(monto, metricasInflacion.tasaCompuesta);
+      const perdidaPoderAdquisitivo = calcularCostoInflacionario(monto, metricasInflacion.tasaCompuesta);
 
       return {
         ticker: inv.Ticker || 'N/A',
@@ -80,7 +80,7 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
       };
     });
 
-    const totalAjustado = totalInvertido * metricasInflacion.tasaCompuesta;
+    const totalAjustado = ajustarCapitalPorInflacion(totalInvertido, metricasInflacion.tasaCompuesta);
 
     return {
       totalInvertido,
