@@ -4,7 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
   // base: './' permite que la app funcione tanto en la raíz como en subdirectorios de GitHub Pages (ej: /PortApp/)
-  base: './',
+  base: '/PortApp/',
   plugins: [
     react(),
     VitePWA({
