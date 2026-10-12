@@ -27,10 +27,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          # Se eliminó cache: 'npm' para evitar el error del lockfile
 
       - name: Instalar dependencias
-        run: npm ci
+        # Se cambió 'npm ci' a 'npm install'
+        run: npm install
 
       - name: Compilar PWA (Vite Build)
         run: npm run build
