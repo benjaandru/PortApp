@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSheets } from './hooks/useSheets';
 import Dashboard from './pages/Dashboard';
-import GastoForm from './components/GastoForm';
-import InversionForm from './components/InversionForm';
+import Gastos from './pages/Gastos';
+import Inversiones from './pages/Inversiones';
 import AccessDenied from './components/AccessDenied';
 import { getConexion, setConexion, clearConexion, validarConexion, urlValida } from './services/api';
 
@@ -66,20 +66,11 @@ export default function App() {
 }
 
 function AppContent({ onLogout }) {
-  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'nuevo-gasto' | 'nueva-inversion'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'gastos' | 'inversiones'
   const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion } = useSheets();
-
-  const handleGastoCreado = async (gasto) => {
-    await agregarGasto(gasto);
-  };
-
-  const handleInversionCreado = async (inversion) => {
-    await agregarInversion(inversion);
-  };
 
   return (
     <div className="app-viewport">
-      {/* Barra Superior con Safe Area para Notch / Dynamic Island */}
       <header className="app-header">
         <div className="header-content">
           <div className="brand">
@@ -96,36 +87,30 @@ function AppContent({ onLogout }) {
         </div>
       </header>
 
-      {/* Contenido Principal con Scroll fluido */}
       <main className="app-main">
         {activeTab === 'dashboard' && (
-          <Dashboard
+          <Dashboard data={data} loading={loading} error={error} onRefresh={refetch} />
+        )}
+
+        {activeTab === 'gastos' && (
+          <Gastos
             data={data}
-            loading={loading}
             error={error}
-            onRefresh={refetch}
+            submitting={submitting}
+            onGastoCreado={agregarGasto}
           />
         )}
 
-        {activeTab === 'nuevo-gasto' && (
-          <div className="form-page-container">
-            <GastoForm
-              onGastoCreado={handleGastoCreado}
-              submitting={submitting}
-            />
-          </div>
-        )}
-        {activeTab === 'nueva-inversion' && (
-          <div className="form-page-container">
-            <InversionForm
-              onInversionCreada={handleInversionCreado}
-              submitting={submitting}
-            />
-          </div>
+        {activeTab === 'inversiones' && (
+          <Inversiones
+            data={data}
+            error={error}
+            submitting={submitting}
+            onInversionCreada={agregarInversion}
+          />
         )}
       </main>
 
-      {/* Barra de Navegación Inferior Estilo Nativo iOS con Safe Area Inset */}
       <nav className="ios-bottom-nav">
         <button
           type="button"
@@ -138,19 +123,20 @@ function AppContent({ onLogout }) {
 
         <button
           type="button"
-          className={`nav-tab ${activeTab === 'nuevo-gasto' ? 'active' : ''}`}
-          onClick={() => setActiveTab('nuevo-gasto')}
+          className={`nav-tab ${activeTab === 'gastos' ? 'active' : ''}`}
+          onClick={() => setActiveTab('gastos')}
         >
-          <span className="nav-icon">➕</span>
-          <span className="nav-label">Nuevo Gasto</span>
+          <span className="nav-icon">💸</span>
+          <span className="nav-label">Gastos</span>
         </button>
+
         <button
           type="button"
-          className={`nav-tab ${activeTab === 'nueva-inversion' ? 'active' : ''}`}
-          onClick={() => setActiveTab('nueva-inversion')}
+          className={`nav-tab ${activeTab === 'inversiones' ? 'active' : ''}`}
+          onClick={() => setActiveTab('inversiones')}
         >
-          <span className="nav-icon">➕</span>
-          <span className="nav-label">Nueva Inversion</span>
+          <span className="nav-icon">💹</span>
+          <span className="nav-label">Inversiones</span>
         </button>
       </nav>
     </div>
