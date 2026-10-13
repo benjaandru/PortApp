@@ -43,7 +43,7 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
     ultimaActualizacion,
     refetch: refrescarPrecios,
   } = usePrecios(tickers);
-  const { posiciones, totales, hayPosicionesSinPrecio } = useValuaciones(inversiones, precios);
+  const { posiciones, totales, hayPosicionesSinPrecio, categoriasOrdenadasActual } = useValuaciones(inversiones, precios);
 
   return (
     <div className="dashboard-container">
@@ -89,6 +89,8 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
 
       <DistribucionInversiones
         categoriasOrdenadasInversiones={categoriasOrdenadasInversiones}
+        categoriasOrdenadasActual={categoriasOrdenadasActual}
+        cargandoPrecios={cargandoPrecios}
       />
 
       {/* 4. Historial Reciente de Gastos */}

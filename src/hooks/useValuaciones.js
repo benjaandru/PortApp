@@ -57,6 +57,23 @@ export function useValuaciones(inversiones, precios) {
         const valorActual = valuadas.reduce((s, p) => s + p.valorActual, 0);
         const resultado = valorActual - invertido;
 
+        // 4) Distribución por categoría a valor actual
+        // Si un activo no tiene precio, entra al monto invertido para no subestimar su categoría
+        const porCategoria = {};
+        posiciones.forEach((p) => {
+            const nombre = p.categoria || 'Sin categoría';
+            const monto = p.sinPrecio ? p.invertido : p.valorActual;
+            const c = (porCategoria[nombre] ||= { categoria: nombre, total: 0, estimado: false });
+            c.total += monto;
+            if (p.sinPrecio) c.estimado = true;
+        });
+        const totalCartera = Object.values(porCategoria).reduce((s, c) => s + c.total, 0);
+        const categoriasOrdenadasActual = Object.values(porCategoria)
+            .map((c) => ({
+                ...c,
+                porcentaje: totalCartera > 0 ? (c.total / totalCartera) * 100 : 0,
+            }))
+            .sort((a, b) => b.total - a.total);
         return {
             posiciones,
             totales: {
@@ -66,6 +83,7 @@ export function useValuaciones(inversiones, precios) {
                 resultadoPct: invertido > 0 ? (resultado / invertido) * 100 : null,
             },
             hayPosicionesSinPrecio: posiciones.some((p) => p.sinPrecio),
+            categoriasOrdenadasActual,
         };
     }, [inversiones, precios]);
 }
