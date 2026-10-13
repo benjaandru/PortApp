@@ -31,14 +31,17 @@
 }
 
 /* Reset y caja */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   background-color: var(--bg-main);
@@ -250,15 +253,41 @@ html, body {
   color: var(--text-muted);
 }
 
-.text-rose { color: var(--accent-rose); }
-.text-emerald { color: var(--accent-emerald); }
-.text-amber { color: var(--accent-amber); }
-.text-cyan { color: var(--accent-cyan); }
-.text-muted { color: var(--text-muted); }
-.text-right { text-align: right; }
-.font-mono { font-family: ui-monospace, SFMono-Regular, monospace; }
-.font-bold { font-weight: 700; }
-.mt-6 { margin-top: 1.25rem; }
+.text-rose {
+  color: var(--accent-rose);
+}
+
+.text-emerald {
+  color: var(--accent-emerald);
+}
+
+.text-amber {
+  color: var(--accent-amber);
+}
+
+.text-cyan {
+  color: var(--accent-cyan);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.mt-6 {
+  margin-top: 1.25rem;
+}
 
 /* Botones y Acciones */
 .btn-primary {
@@ -623,5 +652,69 @@ html, body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.valuacion-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.valuacion-resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.valuacion-resumen>div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.valuacion-label {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.valuacion-valor {
+  font-size: 1.15rem;
+}
+
+.valuacion-valor small {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.valuacion-unidades {
+  opacity: 0.6;
+  margin-left: 0.4rem;
+  font-weight: 400;
+}
+
+.valuacion-aviso {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-top: 0.75rem;
+}
+
+.text-pos {
+  color: var(--success, #22c55e);
+}
+
+.text-neg {
+  color: var(--danger, #ef4444);
+}
+
+@media (max-width: 480px) {
+  .valuacion-resumen {
+    grid-template-columns: 1fr;
+  }
 }

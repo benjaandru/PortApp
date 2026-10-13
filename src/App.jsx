@@ -1,10 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSheets } from './hooks/useSheets';
 import Dashboard from './pages/Dashboard';
 import GastoForm from './components/GastoForm';
 import InversionForm from './components/InversionForm';
+import AccessDenied from './components/AccessDenied';
+import { getConexion, setConexion, clearConexion, validarConexion, urlValida } from './services/api';
+
 
 export default function App() {
+  const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(!!getConexion());
+  const [authError, setAuthError] = useState('');
+
+  useEffect(() => {
+    const saved = getConexion();
+    if (!saved) return;
+    validarConexion(saved)
+      .then(setAuthed)
+      .catch(() => setAuthError('No se pudo conectar. Revisá tu conexión.'))
+      .finally(() => setChecking(false));
+  }, []);
+
+  // Si cualquier llamada devuelve UNAUTHORIZED, volvemos al login
+  useEffect(() => {
+    const onUnauthorized = () => {
+      setAuthed(false);
+      setAuthError('Tu sesión expiró o el token ya no es válido.');
+    };
+    window.addEventListener('auth:unauthorized', onUnauthorized);
+    return () => window.removeEventListener('auth:unauthorized', onUnauthorized);
+  }, []);
+
+  const handleLogin = async (conexion) => {
+    if (!urlValida(conexion.url)) {
+      setAuthError('La URL no parece un despliegue de Apps Script (debe terminar en /exec).');
+      return;
+    }
+    setChecking(true);
+    setAuthError('');
+    try {
+      if (await validarConexion(conexion)) {
+        setConexion(conexion);
+        setAuthed(true);
+      } else {
+        setAuthError('Contraseña incorrecta.');
+      }
+    } catch {
+      setAuthError('No se pudo conectar. Revisá la URL y tu conexión.');
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  const handleLogout = () => {
+    clearConexion();
+    setAuthed(false);
+  };
+
+
+  if (!authed) {
+    return <AccessDenied onSubmit={handleLogin} error={authError} checking={checking} />;
+  }
+
+  return <AppContent onLogout={handleLogout} />;
+}
+
+function AppContent({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'nuevo-gasto' | 'nueva-inversion'
   const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion } = useSheets();
 

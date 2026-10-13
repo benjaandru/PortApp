@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react'
 import { useGastosMetrics } from '../hooks/useGastosMetrics.js';
 import { useInversionesMetrics } from '../hooks/useInversionesMetrics.js';
+import { usePrecios } from '../hooks/usePrecios.js';
+import { useValuaciones } from '../hooks/useValuaciones.js';
 import KpiGrid from '../components/dashboard/KpiGrid.jsx';
 import TablaInversiones from '../components/inversiones/TablaInversiones.jsx';
 import DistribucionGastos from '../components/gastos/DistribucionGastos.jsx';
 import DistribucionInversiones from '../components/inversiones/DistribucionInversiones.jsx'
 import HistorialGastos from '../components/gastos/HistorialGastos.jsx';
+import Valuaciones from '../components/inversiones/Valuaciones.jsx';
 
 /**
  * Componente Contenedor (Container Component / Smart Component)
@@ -30,6 +33,17 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
     categoriasOrdenadasInversiones,
     metricasPortfolio,
   } = useInversionesMetrics(inversiones, inflacion);
+
+  // Valuación a precio de mercado
+  const tickers = useMemo(() => inversiones.map((i) => i.Ticker), [inversiones]);
+  const {
+    precios,
+    loading: cargandoPrecios,
+    error: errorPrecios,
+    ultimaActualizacion,
+    refetch: refrescarPrecios,
+  } = usePrecios(tickers);
+  const { posiciones, totales, hayPosicionesSinPrecio } = useValuaciones(inversiones, precios);
 
   return (
     <div className="dashboard-container">
@@ -79,6 +93,16 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
 
       {/* 4. Historial Reciente de Gastos */}
       <HistorialGastos gastos={gastos} />
+
+      <Valuaciones
+        posiciones={posiciones}
+        totales={totales}
+        loading={cargandoPrecios}
+        error={errorPrecios}
+        ultimaActualizacion={ultimaActualizacion}
+        hayPosicionesSinPrecio={hayPosicionesSinPrecio}
+        onRefresh={refrescarPrecios}
+      />
     </div>
   );
 }
