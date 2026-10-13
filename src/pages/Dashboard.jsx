@@ -2,6 +2,7 @@ import React from 'react';
 import { useGastosMetrics } from '../hooks/useGastosMetrics.js';
 import { useInversionesMetrics } from '../hooks/useInversionesMetrics.js';
 import KpiGrid from '../components/dashboard/KpiGrid.jsx';
+import AccessDenied from '../components/AccessDenied';
 
 export default function Dashboard({ data, loading, error, onRefresh }) {
   const { gastos = [], inversiones = [], inflacion = [] } = data || {};
