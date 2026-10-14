@@ -83,7 +83,7 @@ export default function Valuaciones({
                                         <span className="bar-name">
                                             {p.ticker}
                                             <small className="valuacion-unidades">
-                                                {p.cantidad.toLocaleString('es-AR', { maximumFractionDigits: 6 })} u.
+                                                {(p.cantidad ?? 0).toLocaleString('es-AR', { maximumFractionDigits: 6 })} u.
                                             </small>
                                         </span>
                                         <span className="bar-amount font-mono">
@@ -110,7 +110,11 @@ export default function Valuaciones({
             {hayPosicionesSinPrecio && (
                 <p className="valuacion-aviso">Los activos sin precio no entran en los totales.</p>
             )}
-            {error && <p className="valuacion-aviso text-neg">No se pudieron actualizar los precios.</p>}
+            {error && (
+                <p className="valuacion-aviso text-neg">
+                    No se pudieron actualizar los precios: {String(error)}
+                </p>
+            )}
         </div>
     );
 }

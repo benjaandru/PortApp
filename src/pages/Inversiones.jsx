@@ -6,8 +6,11 @@ import InversionForm from '../components/InversionForm';
 import TablaInversiones from '../components/inversiones/TablaInversiones.jsx';
 import DistribucionInversiones from '../components/inversiones/DistribucionInversiones.jsx';
 import Valuaciones from '../components/inversiones/Valuaciones.jsx';
+import { usePreciosCripto } from '../hooks/usePreciosCripto.js';
 
-export default function Inversiones({ data, error, submitting, onInversionCreada }) {
+
+
+export default function Inversiones({ data, error, submitting, onInversionCreada, onRefresh, loading }) {
     const { inversiones = [], inflacion = [] } = data || {};
     const [mostrarForm, setMostrarForm] = useState(false);
 
@@ -16,16 +19,35 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
         inflacion
     );
 
-    const tickers = useMemo(() => inversiones.map((i) => i.Ticker), [inversiones]);
-    const {
-        precios,
-        loading: cargandoPrecios,
-        error: errorPrecios,
-        ultimaActualizacion,
-        refetch: refrescarPrecios,
-    } = usePrecios(tickers);
+    const hayCripto = useMemo(
+        () => inversiones.some((i) => i.Categoria === 'Criptomonedas'),
+        [inversiones]
+    );
+
+    const tickers = useMemo(
+        () => [...new Set(
+            inversiones
+                .filter((i) => i.Categoria !== 'Criptomonedas')
+                .map((i) => i.Ticker)
+                .filter((t) => t && t !== 'N/A')
+        )],
+        [inversiones]
+    );
+
+    const { precios, loading: cargandoPrecios, error: errorPrecios,
+        ultimaActualizacion, refetch: refrescarPrecios } = usePrecios(tickers);
+
+    const { preciosCripto, loading: cargandoCripto, error: errorCripto,
+        ultimaActualizacion: ultimaCripto, refetch: refrescarCripto } = usePreciosCripto(hayCripto);
+
     const { posiciones, totales, hayPosicionesSinPrecio, categoriasOrdenadasActual } =
-        useValuaciones(inversiones, precios);
+        useValuaciones(inversiones, precios, preciosCripto);
+
+    const refrescarTodo = () => {
+        if (tickers.length) refrescarPrecios();
+        if (hayCripto) refrescarCripto();
+    };
+    const ultima = [ultimaActualizacion, ultimaCripto].filter(Boolean).sort((a, b) => b - a)[0] ?? null;
 
     const handleCreada = async (inversion) => {
         await onInversionCreada(inversion);
@@ -40,6 +62,14 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
                     <p className="subtitle">Portfolio, distribución y valuación</p>
                 </div>
                 <button
+                    onClick={onRefresh}
+                    disabled={loading}
+                    className="btn-secondary"
+                    title="Recargar datos"
+                >
+                    {loading ? '⟳ Sincronizando...' : '↻ Actualizar'}
+                </button>
+                <button
                     type="button"
                     onClick={() => setMostrarForm((v) => !v)}
                     className="btn-secondary"
@@ -47,6 +77,7 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
                     {mostrarForm ? '✕ Cerrar' : '➕ Nueva inversión'}
                 </button>
             </div>
+
 
             {error && (
                 <div className="alert-banner alert-error">⚠ {error}</div>
@@ -69,12 +100,13 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
             <Valuaciones
                 posiciones={posiciones}
                 totales={totales}
-                loading={cargandoPrecios}
-                error={errorPrecios}
-                ultimaActualizacion={ultimaActualizacion}
+                loading={cargandoPrecios || cargandoCripto}
+                error={[errorPrecios, errorCripto].filter(Boolean).join(' · ') || null}
+                ultimaActualizacion={ultima}
                 hayPosicionesSinPrecio={hayPosicionesSinPrecio}
-                onRefresh={refrescarPrecios}
+                onRefresh={refrescarTodo}
             />
+
         </div>
     );
 }

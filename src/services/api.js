@@ -79,9 +79,12 @@ async function postAppsScript(action, data) {
   return handleJson(await response.json(), `Error en la acción ${action}`);
 }
 
+//API para obtener precios de acciones
+
 const PRECIOS_URL = import.meta.env.VITE_PRECIOS_API_URL;
 
 export async function fetchPrecios(tickers) {
+  if (!tickers?.length) return {};
   if (!PRECIOS_URL) throw new Error('VITE_PRECIOS_API_URL no está configurado.');
   const url = `${PRECIOS_URL}?tickers=${encodeURIComponent(tickers.join(','))}`;
   const res = await fetch(url, { redirect: 'follow' });
@@ -90,4 +93,35 @@ export async function fetchPrecios(tickers) {
   const json = await res.json();
   if (json.status !== 'success') throw new Error(json.message);
   return json.data;
+}
+
+//Api para obtener precios de criptomonedas
+
+export async function obtenerPreciosCripto() {
+  const [resCripto, resDolar] = await Promise.all([
+    fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd'),
+    fetch('https://dolarapi.com/v1/dolares/cripto'),
+  ]);
+
+  if (!resCripto.ok) throw new Error(`CoinGecko: HTTP ${resCripto.status}`);
+  if (!resDolar.ok) throw new Error(`DolarApi: HTTP ${resDolar.status}`);
+
+  const cripto = await resCripto.json();
+  const dolar = await resDolar.json();
+
+  const tc = Number(dolar.compra); // o dolar.venta, ver nota abajo
+  if (!Number.isFinite(tc) || tc <= 0) {
+    throw new Error('No se pudo obtener el dólar cripto.');
+  }
+
+  const aArs = (usd) => {
+    const n = Number(usd) * tc;
+    return Number.isFinite(n) ? n : null;
+  };
+
+  return {
+    BTC: aArs(cripto.bitcoin?.usd),
+    ETH: aArs(cripto.ethereum?.usd),
+    SOL: aArs(cripto.solana?.usd),
+  };
 }

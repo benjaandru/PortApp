@@ -4,12 +4,12 @@ import React, { useState } from 'react';
 const CATEGORIAS_PREDEFINIDAS = [
     { id: 'SYP', icon: '📈', label: 'S&P 500' },
     { id: 'Criptomonedas', icon: '₿', label: 'Criptomonedas' },
-    { id: 'Renta_fija', icon: '🏦', label: 'Renta Fija' },
-    { id: 'Fondo_de_emergencia', icon: '🛡️', label: 'Emergencia' },
+    { id: 'Renta_fija_T1', icon: '🏦', label: 'Renta Fija' },
+    { id: 'MoneyMarket', icon: '🛡️', label: 'Emergencia' },
     { id: 'Acciones', icon: ' ', label: 'Acciones' },
-    { id: 'Fondos_Comunes_de_Inversion', icon: ' ', label: 'FCI' },
     { id: 'Emergentes', icon: ' ', label: 'Emergentes' }
 ];
+
 
 export default function InversionForm({ onInversionCreada, submitting }) {
     const getTodayString = () => new Date().toISOString().split('T')[0];
@@ -22,6 +22,7 @@ export default function InversionForm({ onInversionCreada, submitting }) {
         categoria: 'SYP',
         cantidad: '',
         monto_invertido: '',
+        precio_compra: '',
     });
 
     const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
@@ -55,15 +56,21 @@ export default function InversionForm({ onInversionCreada, submitting }) {
             return;
         }
 
+        if (formData.categoria === 'Criptomonedas' && !(parseFloat(formData.precio_compra) > 0)) {
+            setMensaje({ tipo: 'error', texto: 'Para criptomonedas ingresá el precio de compra por unidad.' });
+            return;
+        }
+
         try {
             // Envío de la data con el formato exacto que requerirá tu backend
             await onInversionCreada({
                 fecha: formData.fecha,
-                nombre: formData.nombre.trim(),
-                ticker: formData.ticker.trim() || 'N/A', // Si lo deja vacío, envía N/A
+                nombre: formData.nombre.trim() || 'N/A',
+                ticker: formData.ticker.trim() || 'N/A',
                 categoria: formData.categoria,
-                cantidad: formData.cantidad ? parseFloat(formData.cantidad) : 1, // Por defecto 1 unidad
+                cantidad: formData.cantidad ? parseFloat(formData.cantidad) : 1,
                 monto_invertido: parseFloat(formData.monto_invertido),
+                precio_compra: formData.categoria === 'Criptomonedas' ? parseFloat(formData.precio_compra) : null,
             });
 
             setMensaje({ tipo: 'success', texto: '¡Inversión registrada en Google Sheets con éxito!' });
@@ -217,6 +224,27 @@ export default function InversionForm({ onInversionCreada, submitting }) {
                     />
                 </div>
 
+                {formData.categoria === 'Criptomonedas' && (
+                    <div className="form-group">
+                        <label htmlFor="precio_compra" className="form-label">
+                            Precio de compra (ARS por unidad)
+                        </label>
+                        <div className="input-currency-wrapper">
+                            <span className="currency-symbol">$</span>
+                            <input
+                                id="precio_compra"
+                                name="precio_compra"
+                                type="number"
+                                step="any"
+                                placeholder="Precio al que compraste"
+                                required
+                                value={formData.precio_compra}
+                                onChange={handleChange}
+                                className="input-currency"
+                            />
+                        </div>
+                    </div>
+                )}
                 {/* Botón de Enviar */}
                 <button
                     type="submit"

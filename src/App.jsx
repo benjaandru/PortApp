@@ -104,8 +104,10 @@ function AppContent({ onLogout }) {
         {activeTab === 'inversiones' && (
           <Inversiones
             data={data}
+            loading={loading}
             error={error}
             submitting={submitting}
+            onRefresh={refetch}
             onInversionCreada={agregarInversion}
           />
         )}
