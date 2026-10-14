@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { obtenerPreciosCripto } from '../services/api';
+import { obtenerPreciosCriptoUSD } from '../services/api';
 
 const REFRESH_MS = 15 * 60 * 1000;
 
@@ -14,7 +14,7 @@ export function usePreciosCripto(enabled = true) {
         const id = ++reqId.current;
         setLoading(true);
         try {
-            const data = await obtenerPreciosCripto();
+            const data = await obtenerPreciosCriptoUSD();
             if (id !== reqId.current) return;
             setPreciosCripto(data);
             setError(null);

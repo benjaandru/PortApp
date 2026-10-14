@@ -37,11 +37,12 @@ export function useValuaciones(inversiones, precios, preciosCripto = {}) {
             const invertido = num(inv.Monto_Invertido);
 
             if (categoria === 'Criptomonedas') {
+                console.log("DATOS CRIPTO QUE LLEGAN:", inv);
                 // Guardamos cada compra de cripto como un lote independiente para calcular su propio crecimiento
                 lotesCripto.push({
                     ticker,
                     categoria,
-                    precioCompraInicial: num(inv.Precio_Compra),
+                    precioCompraInicial: num(inv.Precio_compra), //Este es el que se extrajo de la tabla
                     invertido,
                 });
             } else {

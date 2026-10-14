@@ -77,13 +77,19 @@ export default function Valuaciones({
                                     ? (p.valorActual / totales.valorActual) * 100
                                     : 0;
 
+                            // VERIFICACIÓN PARA CRIPTOMONEDAS
+                            const esCripto = p.categoria === 'Criptomonedas';
+
                             return (
                                 <div key={p.ticker} className="bar-item" title={`${peso.toFixed(1)}% de la cartera`}>
                                     <div className="bar-labels">
                                         <span className="bar-name">
                                             {p.ticker}
                                             <small className="valuacion-unidades">
-                                                {(p.cantidad ?? 0).toLocaleString('es-AR', { maximumFractionDigits: 6 })} u.
+                                                {/* SI ES CRIPTO, MOSTRAMOS PRECIO DE COMPRA VS HOY */}
+                                                {esCripto
+                                                    ? 'Monto indexado'
+                                                    : `${(p.cantidad ?? 0).toLocaleString('es-AR', { maximumFractionDigits: 6 })} u.`}
                                             </small>
                                         </span>
                                         <span className="bar-amount font-mono">
@@ -92,7 +98,10 @@ export default function Valuaciones({
                                             ) : (
                                                 <>
                                                     {formatearDinero(p.valorActual)}{' '}
-                                                    <span className={signo(p.resultado)}>({pct(p.resultadoPct)})</span>
+                                                    <span className={signo(p.resultado)}>
+                                                        {/* ACÁ IMPRIMIMOS EL PCT CALCULADO POR EL HOOK */}
+                                                        ({pct(p.resultadoPct)})
+                                                    </span>
                                                 </>
                                             )}
                                         </span>
