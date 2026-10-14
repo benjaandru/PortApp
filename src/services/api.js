@@ -81,7 +81,7 @@ async function postAppsScript(action, data) {
 
 //API para obtener precios de acciones
 
-const PRECIOS_URL = 'https://script.google.com/macros/s/AKfycbymrWJHdXXI-mSSnvBdmY6N8AGW-ew7A3J1yw4gUY83AwE6fodQziXtTueG1WGmjyQ/exec';
+const PRECIOS_URL = "https://script.google.com/macros/s/AKfycbymrWJHdXXI-mSSnvBdmY6N8AGW-ew7A3J1yw4gUY83AwE6fodQziXtTueG1WGmjyQ/exec";
 
 export async function fetchPrecios(tickers) {
   if (!tickers?.length) return {};
