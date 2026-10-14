@@ -38,6 +38,7 @@ jobs:
         env:
           # Si configuraste este secreto en Settings > Secrets and variables > Actions
           VITE_SHEETS_API_URL: ${{ secrets.VITE_SHEETS_API_URL }}
+          VITE_PRECIOS_API_URL: ${{ secrets.VITE_PRECIOS_API_URL }}
 
       - name: Subir artefacto para GitHub Pages
         uses: actions/upload-pages-artifact@v3
