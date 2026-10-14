@@ -100,7 +100,7 @@ export function useValuaciones(inversiones, precios, preciosCripto = {}) {
             const p = (criptoAgrupado[lote.ticker] ||= {
                 ticker: lote.ticker,
                 categoria: lote.categoria,
-                moneda: 'ARS',
+                moneda: 'USD',
                 precio: hoy,
                 cantidad: 0,
                 invertido: 0,

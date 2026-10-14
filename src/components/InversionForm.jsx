@@ -57,7 +57,7 @@ export default function InversionForm({ onInversionCreada, submitting }) {
         }
 
         if (formData.categoria === 'Criptomonedas' && !(parseFloat(formData.precio_compra) > 0)) {
-            setMensaje({ tipo: 'error', texto: 'Para criptomonedas ingresá el precio de compra por unidad.' });
+            setMensaje({ tipo: 'error', texto: 'Para criptomonedas ingresá el precio de compra en USD por unidad.' });
             return;
         }
 
@@ -152,10 +152,10 @@ export default function InversionForm({ onInversionCreada, submitting }) {
                 <div className="grid-2-col">
                     <div className="form-group">
                         <label htmlFor="monto_invertido" className="form-label">
-                            Monto Invertido ($)
+                            Monto Invertido (USD)
                         </label>
                         <div className="input-currency-wrapper">
-                            <span className="currency-symbol">$</span>
+                            <span className="currency-symbol">US$</span>
                             <input
                                 id="monto_invertido"
                                 name="monto_invertido"
@@ -227,16 +227,16 @@ export default function InversionForm({ onInversionCreada, submitting }) {
                 {formData.categoria === 'Criptomonedas' && (
                     <div className="form-group">
                         <label htmlFor="precio_compra" className="form-label">
-                            Precio de compra (ARS por unidad)
+                            Precio de compra (USD por unidad)
                         </label>
                         <div className="input-currency-wrapper">
-                            <span className="currency-symbol">$</span>
+                            <span className="currency-symbol">US$</span>
                             <input
                                 id="precio_compra"
                                 name="precio_compra"
                                 type="number"
                                 step="any"
-                                placeholder="Precio al que compraste"
+                                placeholder="Precio en USD por unidad"
                                 required
                                 value={formData.precio_compra}
                                 onChange={handleChange}
