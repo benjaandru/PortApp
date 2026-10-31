@@ -67,7 +67,7 @@ export default function App() {
 
 function AppContent({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'gastos' | 'inversiones'
-  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion } = useSheets();
+  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion, guardarSaldoMes } = useSheets();
 
   return (
     <div className="app-viewport">
@@ -89,7 +89,7 @@ function AppContent({ onLogout }) {
 
       <main className="app-main">
         {activeTab === 'dashboard' && (
-          <Dashboard data={data} loading={loading} error={error} onRefresh={refetch} />
+          <Dashboard data={data} loading={loading} error={error} onRefresh={refetch} onGuardarSaldoMes={guardarSaldoMes} submitting={submitting} />
         )}
 
         {activeTab === 'gastos' && (

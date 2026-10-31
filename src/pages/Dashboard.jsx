@@ -1,10 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useGastosMetrics } from '../hooks/useGastosMetrics.js';
 import { useInversionesMetrics } from '../hooks/useInversionesMetrics.js';
 import KpiGrid from '../components/dashboard/KpiGrid.jsx';
+import { formatearDinero } from '../utils/formatters.js';
 
-export default function Dashboard({ data, loading, error, onRefresh }) {
-  const { gastos = [], inversiones = [], inflacion = [] } = data || {};
+export default function Dashboard({ data, loading, error, onRefresh, onGuardarSaldoMes, submitting }) {
+  const { gastos = [], inversiones = [], inflacion = [], saldosPorMes = [] } = data || {};
+  const ahora = new Date();
+  const mesActual = ahora.getMonth() + 1;
+  const anioActual = ahora.getFullYear();
+  const sueldoMensual = Number(saldosPorMes.find((item) => Number(item.Mes) === mesActual && Number(item.Anio) === anioActual)?.Saldo) || 0;
+  const [monto, setMonto] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
   const { totalHistorico, totalMesActual } = useGastosMetrics(gastos);
   const {
@@ -13,6 +20,22 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
     perdidaOportunidadTotal,
     metricasInflacion,
   } = useInversionesMetrics(inversiones, inflacion);
+
+  const guardarSueldo = async (event) => {
+    event.preventDefault();
+    const valor = Number(monto);
+    if (!Number.isFinite(valor) || valor <= 0) {
+      setMensaje('Ingresá un sueldo mensual mayor a 0.');
+      return;
+    }
+    try {
+      await onGuardarSaldoMes(valor, mesActual, anioActual);
+      setMensaje('Saldo del mes guardado.');
+      setMonto('');
+    } catch (err) {
+      setMensaje(err.message || 'No se pudo guardar el sueldo.');
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -38,6 +61,8 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
       )}
 
       <KpiGrid
+        sueldoMensual={sueldoMensual}
+        saldoDisponible={sueldoMensual - totalMesActual}
         totalMesActual={totalMesActual}
         totalHistorico={totalHistorico}
         totalInvertido={totalInvertido}
@@ -47,6 +72,23 @@ export default function Dashboard({ data, loading, error, onRefresh }) {
         totalAjustado={totalAjustado}
         perdidaOportunidadTotal={perdidaOportunidadTotal}
       />
+      <section className="card-glass salary-card">
+        <div className="card-header">
+          <div>
+            <h2 className="title-md">Saldo de {String(mesActual).padStart(2, '0')}/{anioActual}</h2>
+            <p className="subtitle">Saldo del mes: {formatearDinero(sueldoMensual - totalMesActual)}</p>
+          </div>
+          {sueldoMensual > 0 && <span className="badge-info">Actual: {formatearDinero(sueldoMensual)}</span>}
+        </div>
+        <form className="salary-form" onSubmit={guardarSueldo}>
+          <label className="form-label" htmlFor="sueldo-mensual">Definí o actualizá el sueldo de este mes</label>
+          <div className="salary-input-row">
+            <input id="sueldo-mensual" type="number" min="0.01" step="0.01" value={monto} onChange={(event) => setMonto(event.target.value)} placeholder="Monto mensual" className="input-field" required />
+            <button type="submit" className="btn-primary" disabled={submitting}>{submitting ? 'Guardando...' : 'Guardar sueldo'}</button>
+          </div>
+          {mensaje && <p className="salary-message" role="status">{mensaje}</p>}
+        </form>
+      </section>
     </div>
   );
 }

@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchSheetsData, insertarGastoApi, insertarInversionApi } from '../services/api';
+import { fetchSheetsData, insertarGastoApi, insertarInversionApi, guardarSaldoMesApi } from '../services/api';
 
 export function useSheets() {
   const [data, setData] = useState({
     gastos: [],
     inversiones: [],
-    inflacion: []
+    inflacion: [],
+    saldosPorMes: []
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +20,8 @@ export function useSheets() {
       setData({
         gastos: result.gastos || [],
         inversiones: result.inversiones || [],
-        inflacion: result.inflacion || []
+        inflacion: result.inflacion || [],
+        saldosPorMes: result.saldosPorMes || []
       });
     } catch (err) {
       setError(err.message || 'Error cargando datos de Google Sheets');
@@ -58,6 +60,17 @@ export function useSheets() {
     }
   };
 
+  const guardarSaldoMes = async (saldo, mes, anio) => {
+    setSubmitting(true);
+    try {
+      const response = await guardarSaldoMesApi(saldo, mes, anio);
+      await loadData();
+      return response;
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return {
     data,
     loading,
@@ -65,6 +78,7 @@ export function useSheets() {
     submitting,
     refetch: loadData,
     agregarGasto,
-    agregarInversion
+    agregarInversion,
+    guardarSaldoMes
   };
 }

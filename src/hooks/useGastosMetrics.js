@@ -20,7 +20,8 @@ export function useGastosMetrics(gastos = []) {
       };
     }
 
-    const currentMonthPrefix = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+    const now = new Date();
+    const currentMonthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     let totalHistorico = 0;
     let totalMesActual = 0;
     const porCategoria = {};

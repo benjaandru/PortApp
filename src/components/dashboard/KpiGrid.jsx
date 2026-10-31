@@ -13,9 +13,19 @@ export default function KpiGrid({
   periodosCount = 0,
   totalAjustado = 0,
   perdidaOportunidadTotal = 0,
+  sueldoMensual = 0,
+  saldoDisponible = 0,
 }) {
   return (
     <div className="kpi-grid">
+      <div className="kpi-card">
+        <span className="kpi-label">Saldo disponible este mes</span>
+        <span className={`kpi-value ${saldoDisponible < 0 ? 'text-rose' : 'text-emerald'}`}>
+          {formatearDinero(saldoDisponible)}
+        </span>
+        <span className="kpi-hint">Saldo mensual: {formatearDinero(sueldoMensual)} − gastos de este mes</span>
+      </div>
+
       <div className="kpi-card">
         <span className="kpi-label">Gastos Este Mes</span>
         <span className="kpi-value text-rose">

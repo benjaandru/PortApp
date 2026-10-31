@@ -64,6 +64,8 @@ export async function validarConexion(conexion) {
 
 export const insertarGastoApi = (gasto) => postAppsScript('insertar_gasto', gasto);
 export const insertarInversionApi = (inv) => postAppsScript('insertar_inversion', inv);
+export const guardarSaldoMesApi = (saldo, mes, anio) =>
+  postAppsScript('guardar_saldo_mes', { saldo, mes, anio });
 
 async function postAppsScript(action, data) {
   const { url, token } = requireConexion();

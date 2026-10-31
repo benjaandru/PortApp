@@ -136,6 +136,16 @@ body {
   margin: 0 auto;
 }
 
+.salary-card { margin-top: 1rem; }
+.salary-form { display: grid; gap: 0.55rem; }
+.salary-input-row { display: grid; grid-template-columns: 1fr auto; gap: 0.6rem; }
+.salary-input-row .btn-primary { white-space: nowrap; }
+.salary-message { color: var(--text-secondary); font-size: 0.82rem; }
+
+@media (max-width: 420px) {
+  .salary-input-row { grid-template-columns: 1fr; }
+}
+
 /* Tarjeta Glassmórfica */
 .card-glass {
   background: var(--bg-card);
