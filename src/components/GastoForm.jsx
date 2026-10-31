@@ -11,6 +11,11 @@ const CATEGORIAS_PREDEFINIDAS = [
   { id: 'Otros', icon: '📦', label: 'Otros' },
 ];
 
+const TIPOS_PAGOS_PREDEFINIDOS = [
+  { id: 'Tarjeta', icon: '', label: 'Tarjeta' },
+  { id: 'MercadoPago', icon: '', label: 'MercadoPago' },
+  { id: 'Efectivo', icon: '', label: 'Efectivo' },
+];
 export default function GastoForm({ onGastoCreado, submitting }) {
   const getTodayString = () => new Date().toISOString().split('T')[0];
 
@@ -19,6 +24,7 @@ export default function GastoForm({ onGastoCreado, submitting }) {
     monto: '',
     categoria: 'Alimentación',
     descripcion: '',
+    tipoPago: 'Efectivo',
   });
 
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
@@ -38,6 +44,13 @@ export default function GastoForm({ onGastoCreado, submitting }) {
     }));
   };
 
+    const handleTipoPagoSelect = (tipo) => {
+    setFormData((prev) => ({
+      ...prev,
+      tipoPago: tipo,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje({ tipo: '', texto: '' });
@@ -54,6 +67,7 @@ export default function GastoForm({ onGastoCreado, submitting }) {
         monto: parseFloat(formData.monto),
         categoria: formData.categoria,
         descripcion: formData.descripcion.trim(),
+        tipoPago: formData.tipoPago,
       });
 
       setMensaje({ tipo: 'success', texto: '¡Gasto registrado en Google Sheets con éxito!' });
@@ -64,6 +78,7 @@ export default function GastoForm({ onGastoCreado, submitting }) {
         monto: '',
         categoria: 'Alimentación',
         descripcion: '',
+        tipoPago: 'Efectivo',
       });
 
       // Limpiar mensaje después de 3.5 segundos
@@ -126,6 +141,27 @@ export default function GastoForm({ onGastoCreado, submitting }) {
                   type="button"
                   key={cat.id}
                   onClick={() => handleCategoriaSelect(cat.id)}
+                  className={`category-pill ${isSelected ? 'active' : ''}`}
+                >
+                  <span className="pill-icon">{cat.icon}</span>
+                  <span className="pill-label">{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Selector Tipo pago */}
+        <div className="form-group">
+          <label className="form-label">Tipo de Pago</label>
+          <div className="category-grid">
+            {TIPOS_PAGOS_PREDEFINIDOS.map((cat) => {
+              const isSelected = formData.tipoPago === cat.id;
+              return (
+                <button
+                  type="button"
+                  key={cat.id}
+                  onClick={() => handleTipoPagoSelect(cat.id)}
                   className={`category-pill ${isSelected ? 'active' : ''}`}
                 >
                   <span className="pill-icon">{cat.icon}</span>

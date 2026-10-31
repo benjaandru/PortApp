@@ -11,33 +11,42 @@ export default function AccessDenied({ onSubmit, error, checking }) {
 
     return (
         <div className="app-viewport access-denied">
-            <form className="access-card" onSubmit={handleSubmit}>
-                <div className="access-icon">🔒</div>
-                <h1>Conectar con tu Sheet</h1>
-                <p>Ingresá la URL de tu script y tu contraseña.</p>
+            {checking ? (
+                /* Pantalla de carga que reemplaza al menú */
+                <div className="access-card loading-container">
+                    <div className="spinner"></div>
+                    <p>Verificando credenciales...</p>
+                </div>
+            ) : (
+                /* Menú original */
+                <form className="access-card" onSubmit={handleSubmit}>
+                    <div className="access-icon">🔒</div>
+                    <h1>Conectar con tu Sheet</h1>
+                    <p>Ingresá la URL de tu script y tu contraseña.</p>
 
-                <input
-                    type="url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://script.google.com/macros/s/.../exec"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                />
-                <input
-                    type="password"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                    placeholder="Contraseña"
-                    autoComplete="current-password"
-                />
+                    <input
+                        type="url"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        placeholder="https://script.google.com/macros/s/.../exec"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                    />
+                    <input
+                        type="password"
+                        value={token}
+                        onChange={(e) => setToken(e.target.value)}
+                        placeholder="Contraseña"
+                        autoComplete="current-password"
+                    />
 
-                {error && <p className="access-error">{error}</p>}
+                    {error && <p className="access-error">{error}</p>}
 
-                <button type="submit" disabled={checking || !url.trim() || !token.trim()}>
-                    {checking ? 'Verificando...' : 'Entrar'}
-                </button>
-            </form>
+                    <button type="submit" disabled={!url.trim() || !token.trim()}>
+                        Entrar
+                    </button>
+                </form>
+            )}
         </div>
     );
 }

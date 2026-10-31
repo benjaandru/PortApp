@@ -24,7 +24,7 @@ export default function HistorialGastos({ gastos = [] }) {
               <div className="recent-info">
                 <div className="recent-title">{g.Descripcion || g.Categoria || 'Sin detalle'}</div>
                 <div className="recent-meta">
-                  <span>{g.Fecha}</span> • <span className="category-tag">{g.Categoria}</span>
+                  <span>{g.Fecha}</span> • <span className="category-tag">{g.Categoria}</span> • <span className="category-tag">{g.TipoPago}</span>
                 </div>
               </div>
               <div className="recent-amount font-mono text-rose">
