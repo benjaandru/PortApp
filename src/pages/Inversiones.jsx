@@ -10,9 +10,10 @@ import { usePreciosCripto } from '../hooks/usePreciosCripto.js';
 
 
 
-export default function Inversiones({ data, error, submitting, onInversionCreada, onRefresh, loading }) {
+export default function Inversiones({ data, error, submitting, onInversionCreada, onEliminarRegistro, onRefresh, loading }) {
     const { inversiones = [], inflacion = [] } = data || {};
     const [mostrarForm, setMostrarForm] = useState(false);
+    const [errorEliminacion, setErrorEliminacion] = useState('');
 
     const { portfolio, categoriasOrdenadasInversiones } = useInversionesMetrics(
         inversiones,
@@ -54,6 +55,16 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
         setMostrarForm(false);
     };
 
+    const handleEliminarInversion = async (inversion) => {
+        if (!window.confirm(`¿Eliminar la inversión ${inversion.ticker} del ${inversion.fecha} por ${inversion.montoInvertido}?`)) return;
+        setErrorEliminacion('');
+        try {
+            await onEliminarRegistro('inversion', inversion.id);
+        } catch (err) {
+            setErrorEliminacion(err.message || 'No se pudo eliminar la inversión.');
+        }
+    };
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-header">
@@ -82,6 +93,7 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
             {error && (
                 <div className="alert-banner alert-error">⚠ {error}</div>
             )}
+            {errorEliminacion && <div className="alert-banner alert-error">⚠ {errorEliminacion}</div>}
 
             {mostrarForm && (
                 <div className="form-page-container">
@@ -95,7 +107,7 @@ export default function Inversiones({ data, error, submitting, onInversionCreada
                 cargandoPrecios={cargandoPrecios}
             />
 
-            <TablaInversiones portfolio={portfolio} />
+            <TablaInversiones portfolio={portfolio} onEliminar={handleEliminarInversion} submitting={submitting} />
 
             <Valuaciones
                 posiciones={posiciones}

@@ -42,6 +42,7 @@ export function useInversionesMetrics(inversiones = [], inflacion = []) {
       const costoInflacionario = calcularCostoInflacionario(monto, metricasInflacion.tasaCompuesta);
 
       return {
+        id: inv?._id,
         ticker: inv?.Ticker || 'N/A',
         fecha: inv?.Fecha || '-',
         cantidad: cant,

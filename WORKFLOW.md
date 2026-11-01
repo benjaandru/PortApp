@@ -24,13 +24,11 @@ La planilla activa tiene estas pestañas:
 | `Inversiones` | datos de inversiones y cotización de compra |
 | `Inflacion` | `Mes`, `Porcentaje` |
 | `Saldo_por_mes` | `Saldo`, `Mes`, `Anio`; conserva el importe base de cada período |
-| `Configuracion` | hoja heredada; se revisa una vez para migrar `sueldo_mensual` existente a `Saldo_por_mes` |
-
-`initSheetsIfNeeded()` crea pestañas/encabezados si faltan. `Configuracion` ya no se crea; si existe de una versión anterior, se consulta solo para migrar el sueldo guardado y se conserva la pestaña.
+`initSheetsIfNeeded()` crea pestañas/encabezados si faltan.
 
 Las llamadas al Web App llevan el token configurado en `API_TOKEN` de Script Properties. GET pasa el token como query param. POST usa `Content-Type: text/plain;charset=utf-8` y envía `{ action, token, data }` para evitar preflight CORS. El backend serializa operaciones con `LockService`.
 
-Acciones POST implementadas: `insertar_gasto`, `insertar_inversion`, `guardar_saldo_mes`. El sueldo se inserta o actualiza por par mes/año; hay como máximo una fila por período.
+Acciones POST implementadas: `insertar_gasto`, `insertar_inversion`, `guardar_saldo_mes` y `eliminar_registro`. El sueldo se inserta o actualiza por par mes/año; hay como máximo una fila por período. `eliminar_registro` recibe el tipo (`gasto` o `inversion`) y el número de fila de Sheets, y borra el registro de la pestaña correspondiente.
 
 ## Flujo de sueldo y saldo mensual
 
@@ -40,13 +38,17 @@ Acciones POST implementadas: `insertar_gasto`, `insertar_inversion`, `guardar_sa
 4. El hook vuelve a cargar los datos tras una escritura exitosa.
 5. Dashboard busca el saldo del mes/año actual, suma los gastos de ese mes y muestra `saldoMensual - gastosDelMes` como disponible. Un resultado negativo se conserva y se muestra como saldo excedido. Los gastos de otros meses no descuentan el período actual.
 
-Mes y año son campos explícitos para identificar y consultar cada período sin depender de fechas con día u hora. El sueldo se registra por período, por lo que se puede actualizar en un mes sin alterar los anteriores. Para usuarios que ya habían guardado `sueldo_mensual`, el primer GET crea el registro correspondiente al mes/año actual y elimina esa fila heredada para evitar repetir la migración.
+Mes y año son campos explícitos para identificar y consultar cada período sin depender de fechas con día u hora. El sueldo se registra por período, por lo que se puede actualizar en un mes sin alterar los anteriores.
 
 ## Flujo de gasto
 
 1. En la pestaña Gastos se abre el formulario y se ingresan fecha, monto, categoría, descripción y tipo de pago.
 2. `insertar_gasto` valida el monto, agrega una fila en `Gastos` y responde JSON.
 3. Si la operación tiene éxito, `useSheets` vuelve a consultar los datos; el gasto mensual y el saldo del Dashboard se actualizan.
+
+Los historiales de gastos e inversiones ofrecen una acción de borrado con confirmación. Apps Script identifica las filas por su número real en Sheets y la interfaz refresca los datos tras eliminar.
+
+En la pantalla Gastos se puede alternar entre el mes actual y el anterior. La distribución y el historial se filtran por el mismo período. `useGastosMetrics` devuelve agregados por categoría con mes (`YYYY-MM`), total y desglose de montos/porcentajes de pago. Los medios `MercadoPago`, efectivo y otros se agrupan como “Otros”; `Tarjeta` se destaca en rojo y el resto en verde en barras apiladas al 100% por categoría.
 
 ## Acceso, despliegue y cambios de backend
 

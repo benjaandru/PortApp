@@ -507,6 +507,19 @@ body {
   overflow: hidden;
 }
 
+.payment-bar { display: flex; height: 12px; }
+.payment-bar-card { height: 100%; background: var(--accent-rose); transition: width 0.25s ease; }
+.payment-bar-other { height: 100%; background: var(--accent-emerald); transition: width 0.25s ease; }
+.payment-bar-labels { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem; }
+.payment-card-label { color: #fb7185; }
+.payment-legend { display: flex; gap: 1rem; margin-top: 1rem; color: var(--text-secondary); font-size: 0.75rem; }
+.payment-legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+.payment-dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; }
+.payment-card-dot { background: var(--accent-rose); }
+.payment-other-dot { background: var(--accent-emerald); }
+.month-selector { display: flex; gap: 0.5rem; margin-top: 1rem; }
+.month-selector .active { border-color: var(--accent-primary); color: #c7d2fe; background: rgba(99, 102, 241, 0.18); }
+
 .bar-fill {
   height: 100%;
   background: linear-gradient(90deg, #6366f1, #06b6d4);
@@ -588,6 +601,23 @@ body {
   font-size: 0.95rem;
   font-weight: 700;
 }
+
+.btn-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  border: 1px solid rgba(244, 63, 94, 0.28);
+  border-radius: var(--radius-sm);
+  color: #fb7185;
+  background: rgba(244, 63, 94, 0.1);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.btn-delete:hover:not(:disabled) { background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.55); }
+.btn-delete:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .empty-text {
   text-align: center;

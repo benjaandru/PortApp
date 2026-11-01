@@ -8,7 +8,6 @@ var SHEETS = {
   GASTOS: "Gastos",
   INVERSIONES: "Inversiones",
   INFLACION: "Inflacion",
-  CONFIGURACION: "Configuracion",
   SALDO_POR_MES: "Saldo_por_mes"
 };
 
@@ -69,7 +68,6 @@ function doGetSheets(e) {
     
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     initSheetsIfNeeded(ss);
-    migrarSueldoMensualLegacy(ss);
 
     var gastosData = getSheetDataAsObjects(ss.getSheetByName(SHEETS.GASTOS));
     var inversionesData = getSheetDataAsObjects(ss.getSheetByName(SHEETS.INVERSIONES));
@@ -141,6 +139,10 @@ function doPost(e) {
         resultMessage = handleGuardarSaldoMes(ss, data);
         break;
 
+      case "eliminar_registro":
+        resultMessage = handleEliminarRegistro(ss, data);
+        break;
+
       default:
         throw new Error("Acción desconocida: '" + action + "'");
     }
@@ -162,6 +164,23 @@ function doPost(e) {
   }
 }
 
+function handleEliminarRegistro(ss, data) {
+  var hojasPorTipo = {
+    gasto: SHEETS.GASTOS,
+    inversion: SHEETS.INVERSIONES
+  };
+  var nombreHoja = hojasPorTipo[data.tipo];
+  if (!nombreHoja) throw new Error("El tipo de registro debe ser 'gasto' o 'inversion'.");
+
+  var fila = Number(data.id);
+  if (!Number.isInteger(fila) || fila < 2) throw new Error("El identificador del registro no es válido.");
+
+  var sheet = ss.getSheetByName(nombreHoja);
+  if (fila > sheet.getLastRow()) throw new Error("El registro ya no existe. Actualizá la lista e intentá de nuevo.");
+  sheet.deleteRow(fila);
+  return "Registro eliminado exitosamente.";
+}
+
 function handleGuardarSaldoMes(ss, data) {
   var sheet = ss.getSheetByName(SHEETS.SALDO_POR_MES);
   var saldo = Number(data.saldo);
@@ -179,35 +198,6 @@ function handleGuardarSaldoMes(ss, data) {
   }
   sheet.appendRow([saldo, mes, anio]);
   return "Saldo del mes guardado.";
-}
-
-function migrarSueldoMensualLegacy(ss) {
-  var configuracion = ss.getSheetByName(SHEETS.CONFIGURACION);
-  if (!configuracion) return;
-  var legacy = configuracion.getDataRange().getValues();
-  var filaLegacy = -1;
-  var saldoLegacy = 0;
-  for (var i = 1; i < legacy.length; i++) {
-    if (String(legacy[i][0]) === "sueldo_mensual") {
-      filaLegacy = i + 1;
-      saldoLegacy = Number(legacy[i][1]);
-      break;
-    }
-  }
-  if (filaLegacy < 0) return;
-
-  if (isFinite(saldoLegacy) && saldoLegacy > 0) {
-    var hoy = new Date();
-    var mes = Number(Utilities.formatDate(hoy, Session.getScriptTimeZone(), "M"));
-    var anio = Number(Utilities.formatDate(hoy, Session.getScriptTimeZone(), "yyyy"));
-    var saldos = ss.getSheetByName(SHEETS.SALDO_POR_MES);
-    var filas = saldos.getDataRange().getValues();
-    var yaExiste = filas.slice(1).some(function(fila) {
-      return Number(fila[1]) === mes && Number(fila[2]) === anio;
-    });
-    if (!yaExiste) saldos.appendRow([saldoLegacy, mes, anio]);
-  }
-  configuracion.deleteRow(filaLegacy);
 }
 
 function handleInsertarGasto(ss, data) {
@@ -256,7 +246,7 @@ function getSheetDataAsObjects(sheet) {
   var rows = [];
 
   for (var i = 1; i < values.length; i++) {
-    var rowObj = { _id: i };
+    var rowObj = { _id: i + 1 }; // número real de fila en Sheets; la fila 1 contiene los encabezados
     var hasContent = false;
     for (var j = 0; j < headers.length; j++) {
       var cellVal = values[i][j];

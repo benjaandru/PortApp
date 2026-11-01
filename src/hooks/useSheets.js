@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchSheetsData, insertarGastoApi, insertarInversionApi, guardarSaldoMesApi } from '../services/api';
+import { fetchSheetsData, insertarGastoApi, insertarInversionApi, guardarSaldoMesApi, eliminarRegistroApi } from '../services/api';
 
 export function useSheets() {
   const [data, setData] = useState({
@@ -71,6 +71,17 @@ export function useSheets() {
     }
   };
 
+  const eliminarRegistro = async (tipo, id) => {
+    setSubmitting(true);
+    try {
+      const response = await eliminarRegistroApi(tipo, id);
+      await loadData();
+      return response;
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return {
     data,
     loading,
@@ -79,6 +90,7 @@ export function useSheets() {
     refetch: loadData,
     agregarGasto,
     agregarInversion,
-    guardarSaldoMes
+    guardarSaldoMes,
+    eliminarRegistro
   };
 }

@@ -67,7 +67,7 @@ export default function App() {
 
 function AppContent({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'gastos' | 'inversiones'
-  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion, guardarSaldoMes } = useSheets();
+  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion, guardarSaldoMes, eliminarRegistro } = useSheets();
 
   return (
     <div className="app-viewport">
@@ -98,6 +98,7 @@ function AppContent({ onLogout }) {
             error={error}
             submitting={submitting}
             onGastoCreado={agregarGasto}
+            onEliminarRegistro={eliminarRegistro}
           />
         )}
 
@@ -109,6 +110,7 @@ function AppContent({ onLogout }) {
             submitting={submitting}
             onRefresh={refetch}
             onInversionCreada={agregarInversion}
+            onEliminarRegistro={eliminarRegistro}
           />
         )}
       </main>

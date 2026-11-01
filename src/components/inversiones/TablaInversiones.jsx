@@ -1,11 +1,12 @@
 import React from 'react';
+import { X } from 'lucide-react';
 import { formatearDinero } from '../../utils/formatters.js';
 
 /**
  * Componente Presentacional: Renderiza la tabla de posiciones de inversión
  * ajustadas por inflación.
  */
-export default function TablaInversiones({ portfolio = [] }) {
+export default function TablaInversiones({ portfolio = [], onEliminar, submitting = false }) {
   return (
     <div className="card-glass mt-6">
       <div className="card-header">
@@ -25,6 +26,7 @@ export default function TablaInversiones({ portfolio = [] }) {
                 <th className="text-right">Cantidad</th>
                 <th className="text-right">Invertido</th>
                 <th className="text-right">Categoría</th>
+                <th className="text-right">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -40,6 +42,11 @@ export default function TablaInversiones({ portfolio = [] }) {
                   </td>
                   <td className="text-right font-mono">
                     <span className="category-tag">{item.categoria}</span>
+                  </td>
+                  <td className="text-right">
+                    <button type="button" className="btn-delete" onClick={() => onEliminar?.(item)} disabled={submitting} title={`Eliminar inversión ${item.ticker}`} aria-label={`Eliminar inversión ${item.ticker}`}>
+                      <X size={18} aria-hidden="true" />
+                    </button>
                   </td>
                 </tr>
               ))}
