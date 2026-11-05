@@ -31,4 +31,18 @@ describe('Hook: useGastosMetrics', () => {
     expect(result.current.categoriasOrdenadasGastos[1].categoria).toBe('Comida');
     expect(result.current.categoriasOrdenadasGastos[1].total).toBe(1500);
   });
+
+  it('debe calcular los totales por medio de pago del mes seleccionado', () => {
+    const fechaPeriodo = new Date(2025, 0, 1);
+    const gastos = [
+      { Fecha: '2025-01-05', Monto: 1200, Categoria: 'Comida', TipoPago: 'Tarjeta' },
+      { Fecha: '2025-01-10', Monto: 800, Categoria: 'Servicios', TipoPago: 'Transferencia' },
+      { Fecha: '2025-02-01', Monto: 500, Categoria: 'Comida', TipoPago: 'Tarjeta' },
+    ];
+
+    const { result } = renderHook(() => useGastosMetrics(gastos, fechaPeriodo));
+
+    expect(result.current.totalTarjetaMesSeleccionado).toBe(1200);
+    expect(result.current.totalOtrosMesSeleccionado).toBe(800);
+  });
 });

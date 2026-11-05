@@ -4,7 +4,12 @@ import { formatearDinero } from '../../utils/formatters.js';
 /**
  * Componente Presentacional: Renderiza las barras de distribución de gastos por categoría
  */
-export default function DistribucionGastos({ categoriasOrdenadasGastos = [], mesLabel = '' }) {
+export default function DistribucionGastos({
+  categoriasOrdenadasGastos = [],
+  totalTarjeta = 0,
+  totalOtros = 0,
+  mesLabel = '',
+}) {
   return (
     <div className="card-glass mt-6">
       <div className="card-header">
@@ -41,8 +46,8 @@ export default function DistribucionGastos({ categoriasOrdenadasGastos = [], mes
       )}
       {categoriasOrdenadasGastos.length > 0 && (
         <div className="payment-legend" aria-hidden="true">
-          <span><i className="payment-dot payment-card-dot"></i>Tarjeta</span>
-          <span><i className="payment-dot payment-other-dot"></i>Otros medios de pago</span>
+          <span><i className="payment-dot payment-card-dot"></i>Tarjeta = {formatearDinero(totalTarjeta)}</span>
+          <span><i className="payment-dot payment-other-dot"></i>Otros medios de pago = {formatearDinero(totalOtros)}</span>
         </div>
       )}
     </div>

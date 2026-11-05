@@ -14,7 +14,11 @@ export default function Gastos({ data, error, submitting, onGastoCreado, onElimi
     const mesLabel = new Intl.DateTimeFormat('es-AR', { month: 'long', year: 'numeric' }).format(fechaPeriodo);
     const mesPrefix = `${fechaPeriodo.getFullYear()}-${String(fechaPeriodo.getMonth() + 1).padStart(2, '0')}`;
     const gastosDelMes = (Array.isArray(gastos) ? gastos : []).filter((gasto) => String(gasto.Fecha || '').startsWith(mesPrefix));
-    const { categoriasOrdenadasGastos } = useGastosMetrics(gastos, fechaPeriodo);
+    const {
+        categoriasOrdenadasGastos,
+        totalTarjetaMesSeleccionado,
+        totalOtrosMesSeleccionado,
+    } = useGastosMetrics(gastos, fechaPeriodo);
 
     const handleCreado = async (gasto) => {
         await onGastoCreado(gasto);
@@ -63,7 +67,12 @@ export default function Gastos({ data, error, submitting, onGastoCreado, onElimi
                 </div>
             )}
 
-            <DistribucionGastos categoriasOrdenadasGastos={categoriasOrdenadasGastos} mesLabel={mesLabel} />
+            <DistribucionGastos
+                categoriasOrdenadasGastos={categoriasOrdenadasGastos}
+                totalTarjeta={totalTarjetaMesSeleccionado}
+                totalOtros={totalOtrosMesSeleccionado}
+                mesLabel={mesLabel}
+            />
             <HistorialGastos gastos={gastosDelMes} mesLabel={mesLabel} onEliminar={handleEliminarGasto} submitting={submitting} />
         </div>
     );

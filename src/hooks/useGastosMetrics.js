@@ -8,6 +8,8 @@ import { useMemo } from 'react';
  *   totalHistorico: number,
  *   totalMesActual: number,
  *   totalMesSeleccionado: number,
+ *   totalTarjetaMesSeleccionado: number,
+ *   totalOtrosMesSeleccionado: number,
  *   categoriasOrdenadasGastos: Array<{ categoria: string, mes: string, total: number, totalTarjeta: number, totalOtros: number, porcentaje: number, porcentajeTarjeta: number, porcentajeOtros: number }>
  * }}
  */
@@ -18,6 +20,8 @@ export function useGastosMetrics(gastos = [], fechaPeriodo = new Date()) {
         totalHistorico: 0,
         totalMesActual: 0,
         totalMesSeleccionado: 0,
+        totalTarjetaMesSeleccionado: 0,
+        totalOtrosMesSeleccionado: 0,
         categoriasOrdenadasGastos: [],
       };
     }
@@ -28,6 +32,8 @@ export function useGastosMetrics(gastos = [], fechaPeriodo = new Date()) {
     let totalHistorico = 0;
     let totalMesActual = 0;
     let totalMesSeleccionado = 0;
+    let totalTarjetaMesSeleccionado = 0;
+    let totalOtrosMesSeleccionado = 0;
     const porCategoria = {};
 
     gastos.forEach((g) => {
@@ -49,8 +55,10 @@ export function useGastosMetrics(gastos = [], fechaPeriodo = new Date()) {
       categoria.total += monto;
       if (String(g.TipoPago || '').trim().toLowerCase() === 'tarjeta') {
         categoria.tarjeta += monto;
+        totalTarjetaMesSeleccionado += monto;
       } else {
         categoria.otros += monto;
+        totalOtrosMesSeleccionado += monto;
       }
     });
 
@@ -71,6 +79,8 @@ export function useGastosMetrics(gastos = [], fechaPeriodo = new Date()) {
       totalHistorico,
       totalMesActual,
       totalMesSeleccionado,
+      totalTarjetaMesSeleccionado,
+      totalOtrosMesSeleccionado,
       categoriasOrdenadasGastos,
     };
   }, [gastos, fechaPeriodo]);
