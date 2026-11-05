@@ -77,7 +77,6 @@ export default function Valuaciones({
                                     ? (p.valorActual / totales.valorActual) * 100
                                     : 0;
 
-                            // VERIFICACIÓN PARA CRIPTOMONEDAS
                             const esCripto = p.categoria === 'Criptomonedas';
 
                             return (

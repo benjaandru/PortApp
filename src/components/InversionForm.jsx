@@ -152,10 +152,9 @@ export default function InversionForm({ onInversionCreada, submitting }) {
                 <div className="grid-2-col">
                     <div className="form-group">
                         <label htmlFor="monto_invertido" className="form-label">
-                            Monto Invertido (USD)
+                            Monto Invertido
                         </label>
                         <div className="input-currency-wrapper">
-                            <span className="currency-symbol">US$</span>
                             <input
                                 id="monto_invertido"
                                 name="monto_invertido"
