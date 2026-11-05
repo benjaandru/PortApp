@@ -67,7 +67,9 @@ export default function App() {
 
 function AppContent({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'gastos' | 'inversiones'
-  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion, guardarSaldoMes, eliminarRegistro } = useSheets();
+
+  //Desde api.js se crean las funciones de backend, que luego se usan en useSheets.js y finalmente se pasan a los componentes de las páginas
+  const { data, loading, error, submitting, refetch, agregarGasto, agregarInversion, guardarSaldoMes, aumentarSaldo, eliminarRegistro } = useSheets();
 
   return (
     <div className="app-viewport">
@@ -89,7 +91,7 @@ function AppContent({ onLogout }) {
 
       <main className="app-main">
         {activeTab === 'dashboard' && (
-          <Dashboard data={data} loading={loading} error={error} onRefresh={refetch} onGuardarSaldoMes={guardarSaldoMes} submitting={submitting} />
+          <Dashboard data={data} loading={loading} error={error} onRefresh={refetch} onGuardarSaldoMes={guardarSaldoMes} onAumentarSaldo={aumentarSaldo} submitting={submitting} />
         )}
 
         {activeTab === 'gastos' && (

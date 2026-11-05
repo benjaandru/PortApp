@@ -143,6 +143,10 @@ function doPost(e) {
         resultMessage = handleEliminarRegistro(ss, data);
         break;
 
+      case "aumentar_saldo_mes":
+        resultMessage = handlerAumentarSaldo(ss, data);
+        break;
+
       default:
         throw new Error("Acción desconocida: '" + action + "'");
     }
@@ -198,6 +202,22 @@ function handleGuardarSaldoMes(ss, data) {
   }
   sheet.appendRow([saldo, mes, anio]);
   return "Saldo del mes guardado.";
+}
+
+function handlerAumentarSaldo(ss, data) {
+  var sheet = ss.getSheetByName(SHEETS.SALDO_POR_MES);
+  var aumentoSaldo = Number(data.monto);
+  var mes = Number(data.mes);
+  var anio = Number(data.anio);
+  if (aumentoSaldo < 0) throw new Error("No podes agregar saldo negativo");
+  if (!Number.isInteger(mes) || mes < 1 || mes > 12) throw new Error("El mes debe estar entre 1 y 12.");
+  if (!Number.isInteger(anio) || anio < 2000 || anio > 9999) throw new Error("El año no es válido.");
+  for (var i = 1; i < values.length; i++) {
+    if (Number(values[i][1]) === mes && Number(values[i][2]) === anio) {
+      sheet.getRange(i + 1, 1).setValue(saldo + aumentoSaldo);
+      return "Saldo del mes actualizado.";
+    }
+  }
 }
 
 function handleInsertarGasto(ss, data) {

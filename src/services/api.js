@@ -62,12 +62,22 @@ export async function validarConexion(conexion) {
   }
 }
 
+//Inserts sobre la tabla
 export const insertarGastoApi = (gasto) => postAppsScript('insertar_gasto', gasto);
+
 export const insertarInversionApi = (inv) => postAppsScript('insertar_inversion', inv);
+
 export const guardarSaldoMesApi = (saldo, mes, anio) =>
   postAppsScript('guardar_saldo_mes', { saldo, mes, anio });
+
+//Actualizacion de valores de la tabla
+export const aumentarSaldoMesApi = (monto, mes, anio) =>
+  postAppsScript('aumentar_saldo_mes', { monto, mes, anio });
+
+//Eliminacion de registros de la tabla
 export const eliminarRegistroApi = (tipo, id) =>
   postAppsScript('eliminar_registro', { tipo, id });
+
 
 async function postAppsScript(action, data) {
   const { url, token } = requireConexion();
